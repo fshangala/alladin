@@ -33,7 +33,7 @@ class _HomeState extends State<HomeScreen> {
             FutureBuilder(
                 future: Future.wait([products, options]),
                 builder: ((context, AsyncSnapshot<List<dynamic>> snapshot) {
-                  print(snapshot);
+                  //print(snapshot);
                   if (snapshot.hasData) {
                     return Column(
                       children: snapshot.data![0].map((Product e) {
