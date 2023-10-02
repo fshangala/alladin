@@ -1,4 +1,3 @@
-import 'package:alladin/core/databases.dart';
 import 'package:alladin/products/product_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:alladin/core/data_types.dart';
@@ -19,19 +18,42 @@ class _HomeState extends State<HomeScreen> {
   bool initialized = false;
 
   void _fetchProducts() {
-    products = Database.getDatabase(options.databaseName)!
-        .getProducts()
-        .map((e) => Product.fromMap(e))
-        .toList();
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) {
+          return const Dialog(
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        });
+    Product.get().then((value) {
+      Navigator.pop(context);
+      setState(() {
+        products = value;
+      });
+    });
   }
 
   void _initialize() {
     if (!initialized) {
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) {
+            return const Dialog(
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          });
       SharedPreferences.getInstance().then((instance) {
+        Navigator.pop(context);
         setState(() {
           options = Options.fromSharedPreferences(instance);
-          _fetchProducts();
           initialized = true;
+          _fetchProducts();
         });
       });
     }

@@ -1,7 +1,6 @@
 import 'package:alladin/products/product_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:alladin/home/home.dart';
-import 'package:alladin/core/data_types.dart';
 import 'package:alladin/cart/cart.dart';
 
 void main() {

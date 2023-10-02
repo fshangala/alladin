@@ -1,20 +1,19 @@
 import 'dart:convert';
+import 'package:alladin/core/databases.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 //General
 class Options {
   String currency;
-  String databaseName;
 
-  Options({this.currency = 'ZMK', this.databaseName = 'local'});
+  Options({this.currency = 'ZMK'});
 
   Map<String, dynamic> toMap() {
-    return {'currency': currency, 'databaseName': databaseName};
+    return {'currency': currency};
   }
 
   static Options fromMap(Map<String, dynamic> data) {
-    return Options(
-        currency: data['currency'], databaseName: data['databaseName']);
+    return Options(currency: data['currency']);
   }
 
   static Options fromSharedPreferences(SharedPreferences instance) {
@@ -51,9 +50,14 @@ class Product {
         price: data['price']);
   }
 
-  static Product getFromFirebase(String id) {
-    return Product(
-        id: id, name: 'Sample product', description: 'description', price: 0.0);
+  static Future<List<Product>> get() async {
+    var result = await Database.getDatabase().get('products');
+    return result.map((e) => Product.fromMap(e)).toList();
+  }
+
+  static Future<Product> getById(String id) async {
+    var result = await Database.getDatabase().getById('products', id);
+    return Product.fromMap(result!);
   }
 }
 
@@ -81,6 +85,18 @@ class Cart {
     return {'items': items.map((e) => e.toMap())};
   }
 
+  static Cart fromMap(Map<String, dynamic> data) {
+    var cart = Cart();
+    cart.items = data['items'].map((Map<String, dynamic> e) {
+      Product? product;
+      Product.getById(e['productId']).then((value) {
+        product = value;
+      });
+      return CartItem(product!, e['quantity']);
+    }).toList();
+    return cart;
+  }
+
   Future<bool> toSharedPreferences(SharedPreferences instance) {
     return instance.setString('cart', jsonEncode(toMap()));
   }
@@ -88,12 +104,7 @@ class Cart {
   static Cart fromSharedPreferences(SharedPreferences instance) {
     String? cartData = instance.getString('cart');
     var cartMap = jsonDecode(cartData!) as Map<String, dynamic>;
-    var cart = Cart();
-    cart.items = cartMap['items']
-        .map((Map<String, dynamic> e) =>
-            CartItem(Product.getFromFirebase(e['productId']), e['quantity']))
-        .toList();
-    return cart;
+    return Cart.fromMap(cartMap);
   }
 
   double totalPrice() {

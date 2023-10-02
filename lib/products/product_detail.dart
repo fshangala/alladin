@@ -1,4 +1,3 @@
-import 'package:alladin/core/databases.dart';
 import 'package:alladin/core/functions.dart';
 import 'package:flutter/material.dart';
 import 'package:alladin/core/data_types.dart';
@@ -19,9 +18,21 @@ class _ProductDetailState extends State<ProductDetail> {
 
   void _initialize(ProductScreenArguments args) {
     if (!initialized) {
+      showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) {
+            return const Dialog(
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          });
       SharedPreferences.getInstance().then((instance) {
+        Navigator.pop(context);
         setState(() {
           options = Options.fromSharedPreferences(instance);
+          cart = Cart.fromSharedPreferences(instance);
           initialized = true;
         });
       });
@@ -29,8 +40,21 @@ class _ProductDetailState extends State<ProductDetail> {
   }
 
   Column _geProduct(String id) {
-    Product product = Product.fromMap(
-        Database.getDatabase(options.databaseName)!.getProductById(id));
+    var product = Product(name: 'Product');
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) {
+          return const Dialog(
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        });
+    Product.getById(id).then((value) {
+      Navigator.pop(context);
+      product = product;
+    });
     return Column(
       children: [
         Center(
