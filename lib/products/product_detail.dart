@@ -12,83 +12,60 @@ class ProductDetail extends StatefulWidget {
 }
 
 class _ProductDetailState extends State<ProductDetail> {
-  Options options = Options();
-  Cart cart = Cart();
-  bool initialized = false;
+  late Future<Options> options;
+  late Future<Cart> cart;
 
-  void _initialize(ProductScreenArguments args) {
-    if (!initialized) {
-      showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) {
-            return const Dialog(
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
-          });
-      SharedPreferences.getInstance().then((instance) {
-        Navigator.pop(context);
-        setState(() {
-          options = Options.fromSharedPreferences(instance);
-          cart = Cart.fromSharedPreferences(instance);
-          initialized = true;
-        });
-      });
-    }
+  @override
+  void initState() {
+    super.initState();
+    options = Options.fromSharedPreferences();
+    cart = Cart.fromSharedPreferences();
   }
 
-  Column _geProduct(String id) {
-    var product = Product(name: 'Product');
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) {
-          return const Dialog(
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        });
-    Product.getById(id).then((value) {
-      Navigator.pop(context);
-      product = product;
-    });
-    return Column(
-      children: [
-        Center(
-          child: Text(product.name),
-        ),
-        Text(product.description),
-        Row(
-          children: [
-            const Expanded(child: Text('Price')),
-            Text(productPrice(product, options))
-          ],
-        ),
-        TextButton(
-            onPressed: () {
-              setState(() {
-                cart.addProduct(product, 1);
-                SharedPreferences.getInstance()
-                    .then((instance) => cart.toSharedPreferences(instance));
-              });
-            },
-            child: const Text('Add To Cart'))
-      ],
-    );
+  FutureBuilder _renderProduct(String id) {
+    return FutureBuilder(
+        future: Future.wait([Product.getById(id), cart, options]),
+        builder: ((context, snapshot) {
+          if (snapshot.hasData) {
+            return Column(
+              children: [
+                Center(
+                  child: Text(snapshot.data![0].name),
+                ),
+                Text(snapshot.data![0].description),
+                Row(
+                  children: [
+                    const Expanded(child: Text('Price')),
+                    Text(productPrice(snapshot.data!, snapshot.data![2]))
+                  ],
+                ),
+                TextButton(
+                    onPressed: () {
+                      setState(() {
+                        snapshot.data![1].addProduct(snapshot.data!, 1);
+                        SharedPreferences.getInstance().then((instance) =>
+                            snapshot.data![1].toSharedPreferences(instance));
+                      });
+                    },
+                    child: const Text('Add To Cart'))
+              ],
+            );
+          } else if (snapshot.hasError) {
+            return Text('${snapshot.error}');
+          } else {
+            return const CircularProgressIndicator();
+          }
+        }));
   }
 
   @override
   Widget build(BuildContext context) {
     final args =
         ModalRoute.of(context)!.settings.arguments as ProductScreenArguments;
-    _initialize(args);
     return Container(
       padding: const EdgeInsets.all(16),
       child: ListView(
-        children: [_geProduct(args.id)],
+        children: [_renderProduct(args.id)],
       ),
     );
   }

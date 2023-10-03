@@ -12,20 +12,25 @@ abstract class Database {
 
   Future<List<Map<String, dynamic>>> get(String collection) async {
     var instance = await SharedPreferences.getInstance();
-    List<Map<String, dynamic>> results =
-        jsonDecode(instance.getString(collection)!);
-    if (collection == 'products' && results.isEmpty) {
-      var dummies = [
-        {'name': 'product1', 'description': 'description1', 'price': 1.0},
-        {'name': 'product2', 'description': 'description2', 'price': 2.0},
-        {'name': 'product3', 'description': 'description3', 'price': 3.0},
-        {'name': 'product4', 'description': 'description4', 'price': 4.0},
-      ];
-      for (var dummy in dummies) {
-        await setItem(collection, dummy);
+    List<Map<String, dynamic>> results = [];
+    var resultsData = instance.getString(collection);
+    if (resultsData != null) {
+      results = jsonDecode(resultsData);
+    } else {
+      if (collection == 'products') {
+        var dummies = [
+          {'name': 'product1', 'description': 'description1', 'price': 1.0},
+          {'name': 'product2', 'description': 'description2', 'price': 2.0},
+          {'name': 'product3', 'description': 'description3', 'price': 3.0},
+          {'name': 'product4', 'description': 'description4', 'price': 4.0},
+        ];
+        for (var dummy in dummies) {
+          await setItem(collection, dummy);
+        }
+        results = await get(collection);
       }
     }
-    results = jsonDecode(instance.getString(collection)!);
+
     return results;
   }
 

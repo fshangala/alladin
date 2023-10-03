@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:js_interop';
 import 'package:alladin/core/databases.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,8 +17,14 @@ class Options {
     return Options(currency: data['currency']);
   }
 
-  static Options fromSharedPreferences(SharedPreferences instance) {
-    return Options.fromMap(jsonDecode(instance.getString('options')!));
+  static Future<Options> fromSharedPreferences() async {
+    var instance = await SharedPreferences.getInstance();
+    var options = instance.getString('options');
+    if (options == null) {
+      return Options();
+    } else {
+      return Options.fromMap(jsonDecode(options));
+    }
   }
 
   Future<bool> toSharedPreferences(SharedPreferences instance) {
@@ -101,10 +108,15 @@ class Cart {
     return instance.setString('cart', jsonEncode(toMap()));
   }
 
-  static Cart fromSharedPreferences(SharedPreferences instance) {
+  static Future<Cart> fromSharedPreferences() async {
+    var instance = await SharedPreferences.getInstance();
     String? cartData = instance.getString('cart');
-    var cartMap = jsonDecode(cartData!) as Map<String, dynamic>;
-    return Cart.fromMap(cartMap);
+    if (cartData.isNull) {
+      return Cart();
+    } else {
+      var cartMap = jsonDecode(cartData!) as Map<String, dynamic>;
+      return Cart.fromMap(cartMap);
+    }
   }
 
   double totalPrice() {
