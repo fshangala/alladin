@@ -14,12 +14,16 @@ class ProductDetail extends StatefulWidget {
 class _ProductDetailState extends State<ProductDetail> {
   late Future<Options> options;
   late Future<Cart> cart;
+  //late ProductScreenArguments args;
+  //late Future<Product> product;
 
   @override
   void initState() {
     super.initState();
+
     options = Options.fromSharedPreferences();
     cart = Cart.fromSharedPreferences();
+    //product = Product.getById(args.id);
   }
 
   FutureBuilder _renderProduct(String id) {
@@ -27,29 +31,33 @@ class _ProductDetailState extends State<ProductDetail> {
         future: Future.wait([Product.getById(id), cart, options]),
         builder: ((context, snapshot) {
           if (snapshot.hasData) {
-            return Column(
-              children: [
-                Center(
-                  child: Text(snapshot.data![0].name),
-                ),
-                Text(snapshot.data![0].description),
-                Row(
-                  children: [
-                    const Expanded(child: Text('Price')),
-                    Text(productPrice(snapshot.data!, snapshot.data![2]))
-                  ],
-                ),
-                TextButton(
-                    onPressed: () {
-                      setState(() {
-                        snapshot.data![1].addProduct(snapshot.data!, 1);
-                        SharedPreferences.getInstance().then((instance) =>
-                            snapshot.data![1].toSharedPreferences(instance));
-                      });
-                    },
-                    child: const Text('Add To Cart'))
-              ],
-            );
+            if (snapshot.data![0].isNull) {
+              return const Text('Product not found!');
+            } else {
+              return Column(
+                children: [
+                  Center(
+                    child: Text(snapshot.data![0].name),
+                  ),
+                  Text(snapshot.data![0].description),
+                  Row(
+                    children: [
+                      const Expanded(child: Text('Price')),
+                      Text(productPrice(snapshot.data!, snapshot.data![2]))
+                    ],
+                  ),
+                  TextButton(
+                      onPressed: () {
+                        setState(() {
+                          snapshot.data![1].addProduct(snapshot.data!, 1);
+                          SharedPreferences.getInstance().then((instance) =>
+                              snapshot.data![1].toSharedPreferences(instance));
+                        });
+                      },
+                      child: const Text('Add To Cart'))
+                ],
+              );
+            }
           } else if (snapshot.hasError) {
             return Text('${snapshot.error}');
           } else {
@@ -60,7 +68,7 @@ class _ProductDetailState extends State<ProductDetail> {
 
   @override
   Widget build(BuildContext context) {
-    final args =
+    var args =
         ModalRoute.of(context)!.settings.arguments as ProductScreenArguments;
     return Container(
       padding: const EdgeInsets.all(16),

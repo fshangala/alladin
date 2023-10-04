@@ -33,20 +33,10 @@ class _HomeState extends State<HomeScreen> {
             FutureBuilder(
                 future: Future.wait([products, options]),
                 builder: ((context, AsyncSnapshot<List<dynamic>> snapshot) {
-                  //print(snapshot);
                   if (snapshot.hasData) {
                     return Column(
-                      children: snapshot.data![0].map((Product e) {
-                        return ListTile(
-                          title: Text(e.name),
-                          trailing: Text(productPrice(e, snapshot.data![1])),
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, ProductDetail.routeName,
-                                arguments: ProductScreenArguments(e.id));
-                          },
-                        );
-                      }).toList(),
+                      children: _productsListTile(
+                          snapshot.data![0], snapshot.data![1]),
                     );
                   } else if (snapshot.hasError) {
                     return Text('No products to show: ${snapshot.error!}');
@@ -57,5 +47,18 @@ class _HomeState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  List<ListTile> _productsListTile(List<Product> products, Options options) {
+    return products
+        .map((e) => ListTile(
+              title: Text(e.name),
+              trailing: Text(displayPrice(e.price, options.currency)),
+              onTap: () {
+                Navigator.pushNamed(context, ProductDetail.routeName,
+                    arguments: ProductScreenArguments(e.id));
+              },
+            ))
+        .toList();
   }
 }

@@ -1,4 +1,5 @@
 import 'package:alladin/products/product_detail.dart';
+import 'package:alladin/settings/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:alladin/home/home.dart';
 import 'package:alladin/cart/cart.dart';
@@ -17,7 +18,8 @@ class AlladinApp extends StatelessWidget {
       routes: {
         HomeScreen.routeName: (context) => const HomeScreen(),
         ProductDetail.routeName: (context) => const ProductDetail(),
-        CartScreen.routeName: (context) => const CartScreen()
+        CartScreen.routeName: (context) => const CartScreen(),
+        SettingsScreen.routeName: (context) => const SettingsScreen()
       },
       initialRoute: '/',
     );

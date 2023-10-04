@@ -38,16 +38,8 @@ class _CartState extends State<CartScreen> {
                     return Column(
                       children: [
                         Column(
-                          children:
-                              snapshot.data![0].items.map((CartItem cartItem) {
-                            return ListTile(
-                              leading: Text(cartItem.quantity.toString()),
-                              title: Text(cartItem.product.name),
-                              subtitle: Text(displayPrice(
-                                  cartItem.product.price,
-                                  snapshot.data![1].currency)),
-                            );
-                          }).toList(),
+                          children: _cartListTile(
+                              snapshot.data![0], snapshot.data![1]),
                         ),
                         Row(
                           children: [
@@ -68,5 +60,15 @@ class _CartState extends State<CartScreen> {
         ),
       ),
     );
+  }
+
+  List<ListTile> _cartListTile(Cart cart, Options options) {
+    return cart.items.map((CartItem cartItem) {
+      return ListTile(
+        leading: Text(cartItem.quantity.toString()),
+        title: Text(cartItem.product.name),
+        subtitle: Text(displayPrice(cartItem.product.price, options.currency)),
+      );
+    }).toList();
   }
 }

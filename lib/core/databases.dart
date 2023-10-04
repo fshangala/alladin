@@ -17,7 +17,7 @@ abstract class Database {
     if (resultsData != null) {
       results = jsonDecode(resultsData);
     } else {
-      if (collection == 'products') {
+      /*if (collection == 'products') {
         var dummies = [
           {'name': 'product1', 'description': 'description1', 'price': 1.0},
           {'name': 'product2', 'description': 'description2', 'price': 2.0},
@@ -28,7 +28,33 @@ abstract class Database {
           await setItem(collection, dummy);
         }
         results = await get(collection);
-      }
+      }*/
+      return [
+        {
+          'id': '1',
+          'name': 'product1',
+          'description': 'description1',
+          'price': 1.0
+        },
+        {
+          'id': '2',
+          'name': 'product2',
+          'description': 'description2',
+          'price': 2.0
+        },
+        {
+          'id': '3',
+          'name': 'product3',
+          'description': 'description3',
+          'price': 3.0
+        },
+        {
+          'id': '4',
+          'name': 'product4',
+          'description': 'description4',
+          'price': 4.0
+        },
+      ];
     }
 
     return results;
