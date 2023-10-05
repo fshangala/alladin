@@ -22,7 +22,8 @@ class Options {
     if (options == null) {
       return Options();
     } else {
-      return Options.fromMap(jsonDecode(options));
+      Map<String, dynamic> optionsMap = jsonDecode(options);
+      return Options.fromMap(optionsMap);
     }
   }
 
@@ -61,9 +62,13 @@ class Product {
     return result.map((e) => Product.fromMap(e)).toList();
   }
 
-  static Future<Product> getById(String id) async {
+  static Future<Product?> getById(String id) async {
     var result = await Database.getDatabase().getById('products', id);
-    return Product.fromMap(result!);
+    if (result != null) {
+      return Product.fromMap(result);
+    } else {
+      return null;
+    }
   }
 }
 
@@ -113,7 +118,7 @@ class Cart {
     if (cartData == null) {
       return Cart();
     } else {
-      var cartMap = jsonDecode(cartData!) as Map<String, dynamic>;
+      Map<String, dynamic> cartMap = jsonDecode(cartData);
       return Cart.fromMap(cartMap);
     }
   }

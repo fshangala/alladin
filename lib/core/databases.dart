@@ -63,12 +63,14 @@ abstract class Database {
   Future<Map<String, dynamic>?> getById(String collection, dynamic id) async {
     Map<String, dynamic>? data;
     var instance = await SharedPreferences.getInstance();
-    List<Map<String, dynamic>> results =
-        jsonDecode(instance.getString(collection)!);
-    for (var result in results) {
-      if (result['id'] == id) {
-        data = result;
-        break;
+    var resultsData = instance.getString(collection);
+    if (resultsData != null) {
+      List<Map<String, dynamic>> results = jsonDecode(resultsData);
+      for (var result in results) {
+        if (result['id'] == id) {
+          data = result;
+          break;
+        }
       }
     }
     return data;

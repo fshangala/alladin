@@ -15,7 +15,7 @@ class _ProductDetailState extends State<ProductDetail> {
   late Future<Options> options;
   late Future<Cart> cart;
   //late ProductScreenArguments args;
-  //late Future<Product> product;
+  late Future<Product?> product;
 
   @override
   void initState() {
@@ -27,8 +27,9 @@ class _ProductDetailState extends State<ProductDetail> {
   }
 
   FutureBuilder _renderProduct(String id) {
+    product = Product.getById(id);
     return FutureBuilder(
-        future: Future.wait([Product.getById(id), cart, options]),
+        future: Future.wait([product, cart, options]),
         builder: ((context, snapshot) {
           if (snapshot.hasData) {
             if (snapshot.data![0] == null) {
@@ -43,13 +44,13 @@ class _ProductDetailState extends State<ProductDetail> {
                   Row(
                     children: [
                       const Expanded(child: Text('Price')),
-                      Text(productPrice(snapshot.data!, snapshot.data![2]))
+                      Text(productPrice(snapshot.data![0], snapshot.data![2]))
                     ],
                   ),
                   TextButton(
                       onPressed: () {
                         setState(() {
-                          snapshot.data![1].addProduct(snapshot.data!, 1);
+                          snapshot.data![1].addProduct(snapshot.data![0], 1);
                           SharedPreferences.getInstance().then((instance) =>
                               snapshot.data![1].toSharedPreferences(instance));
                         });
@@ -70,10 +71,13 @@ class _ProductDetailState extends State<ProductDetail> {
   Widget build(BuildContext context) {
     var args =
         ModalRoute.of(context)!.settings.arguments as ProductScreenArguments;
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: ListView(
-        children: [_renderProduct(args.id)],
+    return Scaffold(
+      appBar: appBar(context, 'Product details'),
+      body: Container(
+        padding: const EdgeInsets.all(16),
+        child: ListView(
+          children: [_renderProduct(args.id)],
+        ),
       ),
     );
   }
