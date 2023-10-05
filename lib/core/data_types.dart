@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:js_interop';
 import 'package:alladin/core/databases.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -111,7 +110,7 @@ class Cart {
   static Future<Cart> fromSharedPreferences() async {
     var instance = await SharedPreferences.getInstance();
     String? cartData = instance.getString('cart');
-    if (cartData.isNull) {
+    if (cartData == null) {
       return Cart();
     } else {
       var cartMap = jsonDecode(cartData!) as Map<String, dynamic>;

@@ -31,7 +31,7 @@ class _ProductDetailState extends State<ProductDetail> {
         future: Future.wait([Product.getById(id), cart, options]),
         builder: ((context, snapshot) {
           if (snapshot.hasData) {
-            if (snapshot.data![0].isNull) {
+            if (snapshot.data![0] == null) {
               return const Text('Product not found!');
             } else {
               return Column(
