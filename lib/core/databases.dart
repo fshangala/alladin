@@ -6,6 +6,33 @@ List<Database> databases = [
 ];
 
 abstract class Database {
+  final List<Map<String, dynamic>> mockData = [
+    {
+      'id': 'mock1',
+      'name': 'product1',
+      'description': 'description1',
+      'price': 100.0
+    },
+    {
+      'id': 'mock2',
+      'name': 'product2',
+      'description': 'description2',
+      'price': 200.0
+    },
+    {
+      'id': 'mock3',
+      'name': 'product3',
+      'description': 'description3',
+      'price': 300.0
+    },
+    {
+      'id': 'mock4',
+      'name': 'product4',
+      'description': 'description4',
+      'price': 400.0
+    },
+  ];
+
   static Database getDatabase() {
     return databases[0];
   }
@@ -29,32 +56,7 @@ abstract class Database {
         }
         results = await get(collection);
       }*/
-      return [
-        {
-          'id': '1',
-          'name': 'product1',
-          'description': 'description1',
-          'price': 1.0
-        },
-        {
-          'id': '2',
-          'name': 'product2',
-          'description': 'description2',
-          'price': 2.0
-        },
-        {
-          'id': '3',
-          'name': 'product3',
-          'description': 'description3',
-          'price': 3.0
-        },
-        {
-          'id': '4',
-          'name': 'product4',
-          'description': 'description4',
-          'price': 4.0
-        },
-      ];
+      results = mockData;
     }
 
     return results;
@@ -69,6 +71,14 @@ abstract class Database {
       for (var result in results) {
         if (result['id'] == id) {
           data = result;
+          break;
+        }
+      }
+    }
+    if (data == null) {
+      for (var element in mockData) {
+        if (element['id'] == id) {
+          data = element;
           break;
         }
       }

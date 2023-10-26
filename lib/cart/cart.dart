@@ -47,6 +47,15 @@ class _CartState extends State<CartScreen> {
                             Text(displayPrice(snapshot.data![0].totalPrice(),
                                 snapshot.data![1].currency))
                           ],
+                        ),
+                        Row(
+                          children: [
+                            TextButton(
+                                onPressed: () {
+                                  //
+                                },
+                                child: const Text('Checkout'))
+                          ],
                         )
                       ],
                     );

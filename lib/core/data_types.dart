@@ -143,5 +143,8 @@ class Cart {
     if (!productFound) {
       items.add(CartItem(product, quantity));
     }
+    SharedPreferences.getInstance().then((instance) {
+      toSharedPreferences(instance);
+    });
   }
 }
